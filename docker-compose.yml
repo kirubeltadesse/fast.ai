@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  jupyter:
+    image: my-custom-image 
+    volumes:
+      - ./src/:/home/jovyan/work
+      - .:/workspace:cached
+    ports:
+      - 8888:8888
+#    command: "-it --rm"
