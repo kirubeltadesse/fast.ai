@@ -2,10 +2,14 @@ version: "3"
 
 services:
   jupyter:
-    image: my-custom-image 
+    build: .
     volumes:
-      - ./src/:/home/jovyan/work
       - .:/workspace:cached
     ports:
       - 8888:8888
-#    command: "-it --rm"
+    environment:
+      NB_USER: "${USER}"
+      CHOWN_HOME: "yes"
+      CHOWN_HOME_OPTS: "-R"
+      CHOWN_EXTRA: "/workspace"
+    user: root
