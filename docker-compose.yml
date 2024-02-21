@@ -4,12 +4,14 @@ services:
   jupyter:
     build: .
     volumes:
-      - .:/workspace:cached
+      - ./src:/home/${USERNAME}/work
     ports:
       - 8888:8888
     environment:
-      NB_USER: "${USER}"
+      NB_USER: "${USERNAME}"
       CHOWN_HOME: "yes"
+      GRANT_SUDO: "yes"
       CHOWN_HOME_OPTS: "-R"
-      CHOWN_EXTRA: "/workspace"
+      CHOWN_EXTRA: "/home/${USERNAME}"
     user: root
+    command: start-notebook.sh --NotebookApp.token ''
