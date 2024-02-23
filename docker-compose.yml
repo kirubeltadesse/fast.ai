@@ -2,13 +2,17 @@ version: "3"
 
 services:
   jupyter:
-    build: .
+    build:
+      context: .
+      args:
+        DEFAULT_USER: "${USERNAME}"
     volumes:
       - ./src:/home/${USERNAME}/work
     ports:
       - 8888:8888
     environment:
-      NB_USER: "${USERNAME}"
+      DEFAULT_USER: "${USERNAME}"
+      NB_USER: "${USERNAME:-default_user}"
       CHOWN_HOME: "yes"
       GRANT_SUDO: "yes"
       CHOWN_HOME_OPTS: "-R"

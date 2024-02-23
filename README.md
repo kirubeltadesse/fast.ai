@@ -1,15 +1,15 @@
 # Create a local setup
 
-If you like to change the user name you can define 
+If you like to change the user name, you can define
+
+create an environment variable
 
 ```bash
-.env
+vim .env
 ```
 
-and add the variable something like
+add your username to the environment variable
 
+```bassh
+USERNAME=your-username
 ```
-USER="JOHN" OR USER=JOHN
-```
-
-

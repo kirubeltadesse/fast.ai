@@ -19,12 +19,10 @@ RUN conda install --quiet --yes \
     'pandas' \
     'matplotlib'
 
+ARG DEFAULT_USER=default_value
 
 # Set the default user
-ARG DEFAULT_USER=kirubel
-
-# print the current user
-RUN echo "Current user: ${DEFAULT_USER}"
+ENV DEFAULT_USER ${DEFAULT_USER}
 
 # Copy everything from /home/jovyan to /home/$USER
 RUN mkdir -p /home/${DEFAULT_USER} && \
