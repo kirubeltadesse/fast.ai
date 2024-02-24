@@ -14,7 +14,7 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN conda install --quiet --yes \
+RUN mamba install --quiet --yes \
     'numpy' \
     'pandas' \
     'matplotlib'
