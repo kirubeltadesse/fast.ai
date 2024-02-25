@@ -18,4 +18,4 @@ services:
       CHOWN_HOME_OPTS: "-R"
       CHOWN_EXTRA: "/home/${USERNAME}"
     user: root
-    command: start-notebook.sh --NotebookApp.token ''
+    command: start-notebook.sh --IdentityProvider.token ''

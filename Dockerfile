@@ -30,14 +30,17 @@ RUN mkdir -p /home/${DEFAULT_USER} && \
 	chown -R ${NB_UID}:${NB_GID} /home/${DEFAULT_USER}
 
 # Install in the default python3 environment
-RUN pip install --no-cache-dir 'flake8' && \
+RUN mamba install --yes 'flake8' && \
+    mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${DEFAULT_USER}"
 
 # Install from the requirements.txt file
 COPY --chown=${NB_UID}:${NB_GID} requirements.txt /tmp/
-RUN pip install --no-cache-dir --requirement /tmp/requirements.txt
-
+RUN mamba install --yes --file /tmp/requirements.txt && \
+    mamba clean --all -f -y && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${DEFAULT_USER}"
 
 # create a symlink to the default .bashrc file
 RUN ln -s /home/jovyan/.bashrc /home/${DEFAULT_USER}/.bashrc
@@ -53,4 +56,3 @@ USER ${DEFAULT_USER}
 
 # Set the working directory
 WORKDIR /home/${DEFAULT_USER}/work
-
