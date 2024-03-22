@@ -7,7 +7,7 @@ services:
       args:
         DEFAULT_USER: "${USERNAME}"
     volumes:
-      - ./src:/home/${USERNAME}/work
+      - ./:/home/${USERNAME}/work
     ports:
       - 8888:8888
     environment:

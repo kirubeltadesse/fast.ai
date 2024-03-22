@@ -2,27 +2,37 @@ FROM quay.io/jupyter/base-notebook
 
 USER root
 
+ARG DEFAULT_USER=default_value
+
+# Set the default user
+ENV DEFAULT_USER ${DEFAULT_USER}
+
+ENV HOME /home/${DEFAULT_USER}
+
 # Install the required packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     curl \
     git \
+    vim \
     libssl-dev \
     libffi-dev \
     python3-dev \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# install from start bash script
+COPY --chown=${NB_UID}:${NB_GID} start /usr/local/bin/start
+RUN chmod +x /usr/local/bin/start
+
+# run the start script as a bash script to install the required packages
+RUN /usr/local/bin/start
+
 RUN mamba install --quiet --yes \
     'numpy' \
     'pandas' \
     'matplotlib'
-
-ARG DEFAULT_USER=default_value
-
-# Set the default user
-ENV DEFAULT_USER ${DEFAULT_USER}
 
 # Copy everything from /home/jovyan to /home/$USER
 RUN mkdir -p /home/${DEFAULT_USER} && \
@@ -37,16 +47,10 @@ RUN mamba install --yes 'flake8' && \
 
 # Install from the requirements.txt file
 COPY --chown=${NB_UID}:${NB_GID} requirements.txt /tmp/
-RUN mamba install --yes --file /tmp/requirements.txt && \
-    mamba clean --all -f -y && \
-    fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${DEFAULT_USER}"
+
+RUN pip install --no-cache-dir --requirement /tmp/requirements.txt
 
 # create a symlink to the default .bashrc file
-RUN ln -s /home/jovyan/.bashrc /home/${DEFAULT_USER}/.bashrc
-RUN ln -s /home/jovyan/.bash_logout /home/${DEFAULT_USER}/.bash_logout
-RUN ln -s /home/jovyan/.cache /home/${DEFAULT_USER}/.cache
-
 RUN ln -s /home/jovyan/.conda /home/${DEFAULT_USER}/.conda
 RUN ln -s /home/jovyan/.jupyter /home/${DEFAULT_USER}/.jupyter
 RUN ln -s /home/jovyan/.npm /home/${DEFAULT_USER}/.npm
