@@ -4,10 +4,12 @@ services:
   jupyter:
     build:
       context: .
+      shm_size: 256m
       args:
         DEFAULT_USER: "${USERNAME}"
     volumes:
       - ./:/home/${USERNAME}/work
+      - ./.jupyter:/home/${USERNAME}/.jupyter
     ports:
       - 8888:8888
     environment:
