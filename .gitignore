@@ -1,3 +1,4 @@
 .env
 .ipynb_checkpoints
+src/02_production/bears/
 src/.*
