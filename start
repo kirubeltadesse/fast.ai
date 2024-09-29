@@ -2,14 +2,9 @@ pip install jupyterlab-git
 mamba install -c conda-forge jupyterlab_vim
 
 echo "Clone dotfiles and shortcuts"
-git clone https://github.com/kirubeltadesse/dotfiles.git
-
-echo "Clone shortcuts"
-mv dotfiles ~/.dotfiles
-
-# make the script executable
-chmod +x ~/.dotfiles/install.sh
+git clone https://github.com/kirubeltadesse/dotfiles.git ~/.dotfiles
 
 cd ~/.dotfiles
 git checkout develop
 /bin/bash ~/.dotfiles/dspInstall.sh
+git config --global core.editor vim
