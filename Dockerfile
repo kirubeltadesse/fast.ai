@@ -9,6 +9,15 @@ ENV DEFAULT_USER ${DEFAULT_USER}
 
 ENV HOME /home/${DEFAULT_USER}
 
+RUN  apt-get -yq update && \
+     apt-get -yqq install ssh
+
+RUN mkdir -p -m 600 $HOME/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+RUN chown -R ${NB_UID}:${NB_GID} $HOME/.ssh && \
+    chmod 700 $HOME/.ssh && \
+    chmod 600 $HOME/.ssh/known_hosts
+
 # Install the required packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

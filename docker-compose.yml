@@ -8,6 +8,7 @@ services:
         DEFAULT_USER: "${USERNAME}"
     volumes:
       - ./:/home/${USERNAME}/work
+      - ~/.ssh:/home/${USERNAME}/.ssh
     ports:
       - 8888:8888
     environment:
