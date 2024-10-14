@@ -1,62 +1,34 @@
-FROM quay.io/jupyter/base-notebook
+# Use an official Python image based on Debian/Ubuntu
+FROM python:3.11-slim
 
-USER root
+# Set environment variables to avoid prompts
+ENV DEBIAN_FRONTEND=noninteractive
 
-ARG DEFAULT_USER=default_value
+SHELL [ "/bin/bash", "-c" ]
 
-# Set the default user
-ENV DEFAULT_USER ${DEFAULT_USER}
+ENV SHELL=/bin/bash
 
-ENV HOME /home/${DEFAULT_USER}
-
-# Install the required packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
+# Install necessary system dependencies
+RUN apt-get update && apt-get install -y \
     curl \
     git \
-    vim \
-    libssl-dev \
-    libffi-dev \
-    python3-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    nodejs \
+    build-essential \
+    && apt-get clean
 
-# install from start bash script
-COPY --chown=${NB_UID}:${NB_GID} start /usr/local/bin/start
-RUN chmod +x /usr/local/bin/start
+COPY requirements.txt requirements-dev.txt /tmp/
 
-# run the start script as a bash script to install the required packages
-RUN /usr/local/bin/start
+RUN --mount=type=cache,target=/root/.cache \
+    python3.11 -m pip install -r /tmp/requirements-dev.txt
 
-RUN mamba install --quiet --yes \
-    'numpy' \
-    'pandas' \
-    'matplotlib'
+# Install jupyterlab_vim extension from conda-forge using mamba
+RUN pip install mamba && \
+    mamba install jupyterlab_vim
 
-# Copy everything from /home/jovyan to /home/$USER
-RUN mkdir -p /home/${DEFAULT_USER} && \
-	cp -r /home/jovyan/* /home/${DEFAULT_USER}/ && \
-	chown -R ${NB_UID}:${NB_GID} /home/${DEFAULT_USER}
+RUN mkdir -p /workarea
 
-# Install in the default python3 environment
-RUN mamba install --yes 'flake8' && \
-    mamba clean --all -f -y && \
-    fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${DEFAULT_USER}"
+COPY . /workarea
 
-# Install from the requirements.txt file
-COPY --chown=${NB_UID}:${NB_GID} requirements.txt /tmp/
+# Set up a working directory
+WORKDIR /workarea
 
-RUN pip install --no-cache-dir --requirement /tmp/requirements.txt
-
-# create a symlink to the default .bashrc file
-RUN ln -s /home/jovyan/.conda /home/${DEFAULT_USER}/.conda
-RUN ln -s /home/jovyan/.jupyter /home/${DEFAULT_USER}/.jupyter
-RUN ln -s /home/jovyan/.npm /home/${DEFAULT_USER}/.npm
-RUN ln -s /home/jovyan/.profile /home/${DEFAULT_USER}/.profile
-
-USER ${DEFAULT_USER}
-
-# Set the working directory
-WORKDIR /home/${DEFAULT_USER}/work

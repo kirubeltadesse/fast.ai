@@ -2,20 +2,12 @@ version: "3"
 
 services:
   jupyter:
-    build:
-      context: .
-      args:
-        DEFAULT_USER: "${USERNAME}"
+    build: .
     volumes:
-      - ./:/home/${USERNAME}/work
+      - .:/workarea
     ports:
       - 8888:8888
-    environment:
-      DEFAULT_USER: "${USERNAME}"
-      NB_USER: "${USERNAME:-default_user}"
-      CHOWN_HOME: "yes"
-      GRANT_SUDO: "yes"
-      CHOWN_HOME_OPTS: "-R"
-      CHOWN_EXTRA: "/home/${USERNAME}"
     user: root
-    command: start-notebook.sh --IdentityProvider.token ''
+    command: 
+      /bin/bash -c \ 
+      "jupyter lab --allow-root --ip=0.0.0.0"
